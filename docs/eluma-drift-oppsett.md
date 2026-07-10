@@ -136,6 +136,8 @@ create table enerett_foresporsel (
 );
 ```
 
+**C3 — utfallsfangst (kjør `supabase/utfall.sql`):** legger til `fornoyd`, `sluttpris` (bøtte), `testimonial`, `utfall_tidspunkt` på `leads`. Kunden fyller dem via `/api/utfall?id=&sig=` (signert lenke, hensikt `utfall`). Send lenken med `POST /api/utfall {send:true, id, admin_token:ADMIN_TOKEN}` (manuelt/cron). Kilden er **kunden**, ikke montøren — se `modell-beslutninger.md` C3.
+
 Feltet `leads.montor` lagrer nå **partner-id** (ikke firmanavn) — robust mot navnebytte og navnekrasj; admin og portal viser firma ved å slå opp id-en. Har du gamle test-leads med firmanavn i `montor`, nullstill eller tildel dem på nytt.
 
 Legger du inn partnere manuelt, husk `epost` — den trengs både for montør-varsel og for portal-innlogging (innlogging skjer på e-postadressen i `partnere.epost`).

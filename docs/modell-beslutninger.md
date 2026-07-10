@@ -117,7 +117,7 @@ automatisk kryssekommune-re-tildeling · full estimat-kalkulator (start med stat
 ---
 
 ## Kodeendringer som følger (når ratifisert)
-1. `leads` + `sluttpris`-kolonne + fangst-endepunkt (C3) — minst arbeid, størst gevinst.
+1. ✅ **C3 LEVERT (2026-07-10):** `supabase/utfall.sql` (kolonner) + `api/utfall.js` (kunde-endepunkt, gjenbruker `signPurpose`/`verifyPurpose`). Gjenstår: kjør SQL i Supabase, og automatiser utsending (Vercel Cron: befaring → +N uker) — nå manuelt via admin-POST.
 2. Regionalt estimat/anker i `App.jsx` (C1/C2).
 3. Enerett-maskineriet nedgraderes til førsterett / hylles for launch (B1/B3).
 4. `andre-vurdering.js` deles etter benk-tetthet (D1).

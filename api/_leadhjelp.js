@@ -16,15 +16,19 @@ export function sbHeaders(key) {
 function leadSecret() {
   return process.env.PORTAL_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "eluma-dev-secret";
 }
-export function signLead(id) {
-  return crypto.createHmac("sha256", leadSecret()).update(`andre-vurdering:${id}`).digest("hex").slice(0, 32);
+// Hensikt-skopet: en `utfall:`-lenke kan ikke gjenbrukes som en `andre-vurdering:`-lenke og omvendt.
+export function signPurpose(id, purpose) {
+  return crypto.createHmac("sha256", leadSecret()).update(`${purpose}:${id}`).digest("hex").slice(0, 32);
 }
-export function verifyLead(id, sig) {
+export function verifyPurpose(id, sig, purpose) {
   if (!id || !sig) return false;
   const a = Buffer.from(String(sig));
-  const b = Buffer.from(signLead(id));
+  const b = Buffer.from(signPurpose(id, purpose));
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
+// Bakoverkompatible innpakninger for andre-vurdering-lenker (byte-identisk med før).
+export const signLead = (id) => signPurpose(id, "andre-vurdering");
+export const verifyLead = (id, sig) => verifyPurpose(id, sig, "andre-vurdering");
 
 // Finn montør for (auto)tildeling. Returnerer { partnerId, firma, kilde } eller null.
 // 1) Enerett-holder for fag+kommune (eksklusiv).  2) Ellers en partner som DEKKER kommunen
