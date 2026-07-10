@@ -225,7 +225,7 @@ export default function App() {
           <p className="el-kile">For fagfolk i Agder</p>
           <h1 className="el-tittel">Leads som er <em>dine alene</em></h1>
           <p className="el-ingress">
-            Eluma sender deg kvalifiserte, lokale henvendelser — én lead til én fagperson.
+            Eluma sender deg kvalifiserte, lokale henvendelser — hver eneste eksklusivt til deg.
             Ikke delt, ikke videresolgt, ingen budkrig.
           </p>
           <div className="el-fagstrip">
