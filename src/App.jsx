@@ -281,7 +281,7 @@ export default function App() {
                 ))}
               </div>
 
-              <p className="el-eksklusiv">Du kobles med <strong>én</strong> lokal fagperson — ikke ringt opp av fem.</p>
+              <p className="el-eksklusiv"><strong>Én</strong> lokal fagperson — din alene.</p>
               <div className="el-trust">
                 <span>Lokalt i Agder</span><i /><span>Godkjente, forsikrede fagfolk</span><i /><span>Gratis og uforpliktende</span>
               </div>
@@ -312,7 +312,7 @@ export default function App() {
             <h2 className="el-sek-tittel">Spørsmål og svar</h2>
             <div className="el-faq-liste">
               <details className="el-faq"><summary>Hva koster det å bruke Eluma?</summary><p>Ingenting for deg. Fagpersonen betaler for å få seriøse, lokale henvendelser — du får tilbudet gratis og uforpliktende.</p></details>
-              <details className="el-faq"><summary>Blir jeg oppringt av mange selgere?</summary><p>Nei. Vi kobler deg med én kvalitetssikret lokal fagperson, ikke en anbudskarusell der fem ringer samtidig.</p></details>
+              <details className="el-faq"><summary>Blir jeg oppringt av mange selgere?</summary><p>Nei — bare én. Du kobles med én kvalitetssikret lokal fagperson som tar kontakt for et uforpliktende tilbud, i ditt tempo.</p></details>
               <details className="el-faq"><summary>Hvilke områder dekker dere?</summary><p>Hele Agder. Vi bruker bare lokale fagfolk som kjenner området.</p></details>
               <details className="el-faq"><summary>Får jeg Enova-støtte på solceller?</summary><p>Ja — Enova støtter solceller med 25 % av kostnaden, maks 2 500 kr per kWp. Viktig: søk forhåndsgodkjenning fra Enova <strong>før</strong> du signerer kontrakt — signerer du for tidlig, mister du støtten. Fagpersonen hjelper deg gjennom det.</p></details>
             </div>
@@ -416,7 +416,7 @@ export default function App() {
         <main className="el-kort el-slutt">
           <div className="el-hake"><Hake /></div>
           <h2 className="el-h2">Takk, {d.navn.split(" ")[0] || "da er det sendt"}!</h2>
-          <p className="el-brod">En lokal fagperson tar kontakt med deg om {tjeneste.t ? tjeneste.t.toLowerCase() : "jobben"} for et uforpliktende tilbud. Du hører fra én — ikke fem.</p>
+          <p className="el-brod">En lokal fagperson tar kontakt med deg om {tjeneste.t ? tjeneste.t.toLowerCase() : "jobben"} for et uforpliktende tilbud. Du hører fra én — din alene.</p>
           <details className="el-intern">
             <summary>Internt · lead-objektet (vises ikke til kunden)</summary>
             <div className="el-intern-nokkel"><span>tjeneste</span><code className="premium">{d.tjeneste}{HAR_OMFANG(d.tjeneste) && d.omfang ? " · " + d.omfang : ""}</code><span>score</span><code className={score >= 0.7 ? "varm" : ""}>{score}</code><span>intensjon</span><code>{intens.navn}</code><span>leadverdi</span><code className="premium">{leadverdi} kr</code></div>
@@ -569,13 +569,7 @@ body{display:block;min-height:auto;place-items:initial;text-align:left;}
 .el-tjeneste svg{color:var(--lime);margin-bottom:4px;}
 .el-tj-tittel{font-family:'Unbounded',sans-serif;font-weight:600;font-size:15px;letter-spacing:-.01em;}
 .el-tj-desc{font-size:12.5px;color:#AEB2A8;line-height:1.35;}
-/* Elektriker = det sekundære «alt annet»-valget — tonet ned, lyser opp ved hover */
-.el-tjeneste:last-child{background:rgba(255,255,255,.02);border-color:rgba(255,255,255,.07);}
-.el-tjeneste:last-child svg{color:#9fb1a4;}
-.el-tjeneste:last-child .el-tj-tittel{color:#C8CCC3;}
-.el-tjeneste:last-child .el-tj-desc{color:#8b9890;}
-.el-tjeneste:last-child:hover{background:rgba(198,242,78,.06);border-color:var(--lime);}
-.el-tjeneste:last-child:hover svg{color:var(--lime);}
+/* Elektriker vises likestilt med de andre tjenestene. */
 .el-tjeneste:last-child:hover .el-tj-tittel{color:var(--paper);}
 
 .el-trust{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px;margin:24px auto 0;font-size:13px;color:#AEB2A8;}
