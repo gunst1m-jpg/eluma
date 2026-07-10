@@ -2,8 +2,8 @@
 // samtykke lagret med tidspunkt+versjon (lead.js), deling med ÉN montør, databehandlere
 // Supabase/Resend/Vercel, funksjonell sesjonskapsel i portalen (portal/_auth.js).
 //
-// TODO før launch — fyll inn de markerte [ ]-plassholderne:
-//   [Eluma AS, org.nr …], [adresse], [X måneder] lagringstid, og bekreft personvern@eluma.no.
+// Behandlingsansvarlig: Gunstein Myre AS (org.nr 922 205 698), Kjøita 17, 4630 Kristiansand S. Lagringstid: 24 mnd.
+// GJENSTÅR før launch: sett opp mottak på personvern@eluma.no (eller bytt til en reell adresse).
 export default function Personvern() {
   return (
     <div className="pv-root">
@@ -26,8 +26,9 @@ export default function Personvern() {
         <section>
           <h2>1. Behandlingsansvarlig</h2>
           <p>
-            <strong>[Eluma AS, org.nr … ]</strong>, [adresse], Agder, er behandlingsansvarlig for
-            personopplysningene som beskrives her. Spørsmål om personvern:{" "}
+            Eluma er en tjeneste fra <strong>Gunstein Myre AS</strong> (org.nr 922 205 698),
+            Kjøita 17, 4630 Kristiansand S, som er behandlingsansvarlig for personopplysningene
+            som beskrives her. Spørsmål om personvern:{" "}
             <a href="mailto:personvern@eluma.no">personvern@eluma.no</a>.
           </p>
         </section>
@@ -67,7 +68,7 @@ export default function Personvern() {
           <h2>5. Lagringstid</h2>
           <p>Vi lagrer henvendelsen så lenge det er nødvendig for å levere og dokumentere tjenesten, og
             deretter i en begrenset periode av hensyn til regnskap og eventuelle tvister. Henvendelser
-            slettes eller anonymiseres senest <strong>[X måneder]</strong> etter siste aktivitet.
+            slettes eller anonymiseres senest <strong>24 måneder</strong> etter siste aktivitet.
             Dokumentasjon av samtykke (tidspunkt og versjon) beholdes så lenge vi kan ha behov for å
             dokumentere at samtykke ble gitt.</p>
         </section>
