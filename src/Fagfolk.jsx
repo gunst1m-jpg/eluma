@@ -16,7 +16,7 @@ const PRISER = [
   { navn: "Smarthus – lys, varme, styring", lead: 300 },
   { navn: "Elektriker – mindre / service", lead: 195 },
 ];
-// Enerett kjøpes per kommune, vektet etter kommunens lead-potensial (oppstartshypoteser — start lavt).
+// Førsterett kjøpes per kommune, vektet etter kommunens lead-potensial (oppstartshypoteser — start lavt).
 const ENERETT_TIERS = [
   { navn: "Stor kommune", eksempel: "Kristiansand, Arendal", mnd: 990 },
   { navn: "Middels kommune", eksempel: "Grimstad, Lillesand, Lindesnes, Vennesla", mnd: 590 },
@@ -237,7 +237,7 @@ export default function App() {
             </div>
           </div>
           <button className="el-cta" onClick={scrollTil}>Meld interesse</button>
-          <p className="el-eksklusiv"><strong>Sikre kommunen din</strong> — vi tar inn én fagperson per fag i hver kommune.</p>
+          <p className="el-eksklusiv"><strong>Sikre førsteretten din</strong> — kun én fagperson kan ha førsterett per fag i hver kommune.</p>
         </div>
       </main>
       <div className="el-current" aria-hidden />
@@ -282,14 +282,14 @@ export default function App() {
           </div>
           <div className="el-pris-kort fram">
             <span className="el-pris-badge">Valgfritt</span>
-            <span className="el-pris-navn">Enerett per kommune</span>
+            <span className="el-pris-navn">Førsterett per kommune</span>
             <p className="el-pris-stor">fra {MIN_ENERETT_MND} kr<small>/ mnd per kommune</small></p>
-            <p className="el-pris-under">Eneste mottaker i kommunen · prioritet på leads</p>
+            <p className="el-pris-under">Først i køen på nye leads · beholdes ved respons</p>
             <div className="el-pris-delelinje" aria-hidden />
             <ul className="el-pris-liste">
-              <li>Du er alene om faget ditt i kommunen — ingen andre får leads der</li>
-              <li>Lås så mange kommuner du vil — pris per kommune</li>
-              <li>Førsteprioritet på nye henvendelser</li>
+              <li>Hvert nytt lead i kommunen går til deg først — før noen andre</li>
+              <li>Svarer du raskt, er de i praksis dine; svarer du ikke, går de videre</li>
+              <li>Førsterett i så mange kommuner du vil — pris per kommune</li>
             </ul>
             <button className="el-pris-cta fram" onClick={scrollTil}>Meld interesse</button>
           </div>
@@ -305,7 +305,7 @@ export default function App() {
         </div>
         <p className="el-pt-note">Priser per eksklusive lead, uten binding. Varme leads (kunde klar nå) er full pris; lunkne og utforskende rabatteres automatisk.</p>
 
-        <p className="el-pt-overskrift">Enerett — pris per kommune / måned</p>
+        <p className="el-pt-overskrift">Førsterett — pris per kommune / måned</p>
         <div className="el-pristabell el-enerett-tabell">
           {ENERETT_TIERS.map((t) => (
             <div className="el-pt-rad" key={t.navn}>
@@ -314,7 +314,7 @@ export default function App() {
             </div>
           ))}
         </div>
-        <p className="el-pt-note">Du mottar eksklusive leads i hele området du dekker — uten månedspris. Enerett er valgfritt og kjøpes per kommune der du vil være den eneste vi sender leads til. Lås så mange kommuner du vil; store kommuner koster mer enn små.</p>
+        <p className="el-pt-note">Du mottar eksklusive leads (én lead, én fagperson) i hele området du dekker — uten månedspris. Førsterett er valgfritt og kjøpes per kommune der du vil stå først i køen. Du beholder forspranget ved å svare raskt — svarer du ikke i tide, går leadet videre så kunden aldri blir stående. Så mange kommuner du vil; store koster mer enn små.</p>
 
         <p className="el-garanti">Holder ikke en lead mål? Si fra innen 48 timer, så krediterer vi den.</p>
         <p className="el-modell-note">Oppstartspriser for de første partnerne i Agder. Ingen oppstartskostnad, ingen skjulte gebyrer.</p>
@@ -380,9 +380,9 @@ export default function App() {
         <h2 className="el-sek-tittel">Spørsmål og svar</h2>
         <div className="el-faq-liste">
           <details className="el-faq"><summary>Deler dere leads med flere fagfolk?</summary><p>Nei. Én lead går til én fagperson. Det er hele poenget — du slipper budkrigen.</p></details>
-          <details className="el-faq"><summary>Hva koster det?</summary><p>Du betaler per kvalifiserte, eksklusive lead — fra {MIN_LEAD} kr for en mindre jobb til {MAX_LEAD} kr for et varmt solcelle-lead. Du mottar leads i hele området du dekker uten månedspris. Vil du være den eneste vi sender leads til i en kommune, kjøper du enerett der — fra {MIN_ENERETT_MND} kr/mnd per kommune. Enerettspartnere prioriteres på leads i området og får bedre kommersielle vilkår over tid. Ingen oppstartskostnad.</p></details>
-          <details className="el-faq"><summary>Hva betyr enerett i området?</summary><p>To ting henger sammen her. <strong>Dekningsområdet</strong> ditt er kommunene du tar leads i — der får du eksklusive leads uansett, uten ekstra kostnad. <strong>Enerett</strong> kjøper du per kommune, og gjør deg til den eneste vi sender leads til i ditt fag der. Andre fag kan ha egne partnere i samme kommune. Eneretten gjelder så lenge du har kapasitet til å svare og følge opp, og revideres jevnlig.</p></details>
-              <details className="el-faq"><summary>Kan jeg ha enerett i flere kommuner?</summary><p>Ja. Du låser så mange kommuner du vil og betaler per kommune — store kommuner koster mer enn små. Du trenger ikke enerett for å motta leads i en kommune; det holder at den er i dekningsområdet ditt. Enerett er for der du vil være alene.</p></details>
+          <details className="el-faq"><summary>Hva koster det?</summary><p>Du betaler per kvalifiserte, eksklusive lead — fra {MIN_LEAD} kr for en mindre jobb til {MAX_LEAD} kr for et varmt solcelle-lead. Du mottar leads i hele området du dekker uten månedspris. Vil du stå først i køen på leads i en kommune, kjøper du førsterett der — fra {MIN_ENERETT_MND} kr/mnd per kommune. Førsterett-partnere får hvert lead først og bedre kommersielle vilkår over tid. Ingen oppstartskostnad.</p></details>
+          <details className="el-faq"><summary>Hva betyr førsterett i området?</summary><p>To ting henger sammen her. <strong>Dekningsområdet</strong> ditt er kommunene du tar leads i — der får du eksklusive leads (én lead, én fagperson) uansett, uten ekstra kostnad. <strong>Førsterett</strong> kjøper du per kommune, og gir deg hvert nytt lead i faget ditt der <em>først</em>: svarer du raskt, er det ditt; svarer du ikke i tide, går det videre til en annen så kunden aldri blir stående. Du beholder forspranget ved respons, ikke ved å låse ute andre. Andre fag kan ha egne partnere i samme kommune. Førsteretten gjelder så lenge du svarer og følger opp, og revideres jevnlig.</p></details>
+              <details className="el-faq"><summary>Kan jeg ha førsterett i flere kommuner?</summary><p>Ja. Førsterett i så mange kommuner du vil, pris per kommune — store koster mer enn små. Du trenger ikke førsterett for å motta leads i en kommune; det holder at den er i dekningsområdet ditt. Førsterett er for der du vil stå fremst i køen.</p></details>
           <details className="el-faq"><summary>Hvor mange leads kan jeg vente meg?</summary><p>Det avhenger av fag og område, og vi er ærlige på at volumet er lavere i oppstart. Vi prioriterer kvalitet framfor kvantitet — varme henvendelser, ikke en bunke kalde.</p></details>
           <details className="el-faq"><summary>Hvordan kvalitetssikres en lead?</summary><p>Kunden svarer på behov, bolig og tidshorisont før vi sender. Vi scorer intensjonen, så du vet hvor varm henvendelsen er før du tar kontakt.</p></details>
         </div>
