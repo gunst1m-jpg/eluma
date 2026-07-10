@@ -426,7 +426,7 @@ export default function App() {
         </main>
       )}
 
-      {steg !== 0 && <footer className="el-bunn">Eksempel-case og tall byttes med faktiske referanser fra lokale fagfolk før lansering.</footer>}
+      {steg !== 0 && <footer className="el-bunn">Eluma · lokal fagperson-formidling i Agder · <a className="el-inline-link" href="/personvern" target="_blank" rel="noopener">Personvern</a></footer>}
     </div>
   );
 }
