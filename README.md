@@ -38,16 +38,30 @@ docs/                   spesifikasjon + drift
 
 Miljøvariabler: se [`.env.example`](.env.example) (8 stk). Supabase-skjema: `docs/eluma-drift-oppsett.md` §3.
 
-## Status — mangler før deploy
+## Kjøre lokalt
 
-Dette repoet inneholder **API-laget + side-komponentene + docs** (eksportert fra cowork).
-Følgende byggeskall er **ikke** her ennå og må lages/hentes før det kan deployes:
+```
+npm install
+npm run dev        # Vite dev-server
+npm run build      # produksjonsbygg → dist/ (verifisert: bygger rent)
+```
 
-- [ ] Vite-skall: `package.json`, `vite.config.js`, `index.html`, `src/main.jsx` + ruter (monter `App`/`Fagfolk`/`Admin` på `/admin`/`Portal` på `/portal`)
-- [ ] `src/steg/` — ett komponent per skjemasteg (referert i spec §7)
-- [ ] `src/estimat/konstanter.js` + `src/estimat/beregn.js` — deterministisk estimatmotor (spec §3)
-- [ ] `src/personvern.jsx` + `public/` (OG-bilde, logo, caser)
-- [ ] Skru på ekte sending: `BRUK_EKTE_API = true` i `App.jsx` (~l.26) og `Fagfolk.jsx` (~l.32)
-- [ ] `vercel.json` + Supabase-tabeller kjørt + de 8 env-variablene satt i Vercel
+Rutene monteres i `src/main.jsx`: `/` (App), `/fagfolk` (Fagfolk), `/admin` (Admin),
+`/portal` (Portal). `vercel.json` sender alle ikke-`/api`-ruter til `index.html` (SPA).
+
+> **Merk:** score/estimat-logikken ligger **inline i `App.jsx`** (funksjonen `beregnScore`
+> + konstantene der oppe), ikke i separate `src/estimat/`- eller `src/steg/`-filer som den
+> opprinnelige spec-en §3/§7 skisserte. Hver side injiserer sin egen `<style>`.
+
+## Status — gjenstår før deploy
+
+Byggeskallet er på plass og bygger rent. Det som gjenstår for en faktisk live-versjon:
+
+- [ ] Skru på ekte sending: `BRUK_EKTE_API = true` i `App.jsx` (~l.26) og `Fagfolk.jsx` (~l.37) — kjører i stub-modus til da
+- [ ] Supabase: opprett prosjekt + kjør `create table`-snuttene (`docs/eluma-drift-oppsett.md` §3)
+- [ ] Vercel: sett de 8 env-variablene (`.env.example`) + deploy
+- [ ] `public/` — OG-delingsbilde, logo, caser-bilder (referanser)
+- [ ] Personvern: egen `/personvern`-rute/side (spec §5 krever den tilgjengelig fra skjemaet)
+- [ ] Kalibrer estimat- og prishypotesene mot Agder Taks faktiske tall (spec §3, drift §7)
 
 Go-live-rekkefølge og ende-til-ende-test: `docs/eluma-drift-oppsett.md` §4–5.
