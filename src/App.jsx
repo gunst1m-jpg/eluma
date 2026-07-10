@@ -314,7 +314,7 @@ export default function App() {
               <details className="el-faq"><summary>Hva koster det å bruke Eluma?</summary><p>Ingenting for deg. Fagpersonen betaler for å få seriøse, lokale henvendelser — du får tilbudet gratis og uforpliktende.</p></details>
               <details className="el-faq"><summary>Blir jeg oppringt av mange selgere?</summary><p>Nei. Vi kobler deg med én kvalitetssikret lokal fagperson, ikke en anbudskarusell der fem ringer samtidig.</p></details>
               <details className="el-faq"><summary>Hvilke områder dekker dere?</summary><p>Hele Agder. Vi bruker bare lokale fagfolk som kjenner området.</p></details>
-              <details className="el-faq"><summary>Får jeg Enova-støtte på solceller?</summary><p>Ja — i 2026 opptil 2 500 kr per kWp, maks 37 500 kr. Husk forhåndsgodkjenning fra Enova før du signerer. Fagpersonen hjelper deg gjennom det.</p></details>
+              <details className="el-faq"><summary>Får jeg Enova-støtte på solceller?</summary><p>Ja — Enova støtter solceller med 25 % av kostnaden, maks 2 500 kr per kWp. Viktig: søk forhåndsgodkjenning fra Enova <strong>før</strong> du signerer kontrakt — signerer du for tidlig, mister du støtten. Fagpersonen hjelper deg gjennom det.</p></details>
             </div>
           </section>
 
