@@ -570,7 +570,6 @@ body{display:block;min-height:auto;place-items:initial;text-align:left;}
 .el-tj-tittel{font-family:'Unbounded',sans-serif;font-weight:600;font-size:15px;letter-spacing:-.01em;}
 .el-tj-desc{font-size:12.5px;color:#AEB2A8;line-height:1.35;}
 /* Elektriker vises likestilt med de andre tjenestene. */
-.el-tjeneste:last-child:hover .el-tj-tittel{color:var(--paper);}
 
 .el-trust{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px;margin:24px auto 0;font-size:13px;color:#AEB2A8;}
 .el-trust i{width:4px;height:4px;border-radius:50%;background:var(--lime);opacity:.7;flex:none;}
