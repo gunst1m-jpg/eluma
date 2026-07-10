@@ -8,6 +8,7 @@
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, VARSEL_FRA, SITE_URL, PORTAL_SECRET
 import crypto from "node:crypto";
 import { sbHeaders, finnMontor, varsleMontor, verifyLead, TJENESTE_NAVN } from "./_leadhjelp.js";
+import { beregnAnker } from "./anker.js";
 
 const MIN_TIMER = 24;        // gi første montør minst et døgn på å gi tilbud før ny vurdering kan utløses
 const MAKS_VURDERINGER = 1;  // én ekstra vurdering (totalt to montører på samme lead)
@@ -26,6 +27,22 @@ function side(tittel, tekst) {
   p{color:#9AA093;font-size:15px;line-height:1.6;margin:0}
 </style></head>
 <body><div class="kort"><p class="merke">eluma</p><h1>${tittel}</h1><p>${tekst}</p></div></body></html>`;
+}
+
+// D1 — tynn kommune: ankeret som målestokk (nøytralt spenn, ikke en dom over montøren).
+function ankerSide(a) {
+  if (!a)
+    return side("Vi ser på det", "Vi har ingen annen lokal fagperson for dette i området ditt akkurat nå. Svar på e-posten, så hjelper vi deg videre.");
+  const kr = (n) => Number(n).toLocaleString("nb-NO");
+  const omrade = a.omrade || "Agder";
+  const kildeNote = a.kilde === "faktiske" ? `Basert på faktiske jobber i ${omrade}.` : `Anslag for ${omrade}.`;
+  const tekst =
+    `Vi har foreløpig ingen annen lokal fagperson for dette i området ditt.<br><br>` +
+    `Men her er hva denne jobben <strong>typisk koster i ${omrade}</strong>, så du kan vurdere tilbudet ditt selv:` +
+    `<span style="display:block;margin:14px 0 6px;font-size:26px;font-weight:800;color:#C6F24E">${kr(a.lav)}–${kr(a.hoy)} kr</span>` +
+    `<span style="display:block;font-size:13px;color:#7C7B72">${kildeNote} Ferdig montert, varierer med jobben.</span>` +
+    `<br>Ligger tilbudet ditt langt over dette, svar på e-posten — så ser vi på det.`;
+  return side("Til å sammenligne med", tekst);
 }
 
 export default async function handler(req, res) {
@@ -58,8 +75,13 @@ export default async function handler(req, res) {
     // Finn en ANNEN egnet montør (ekskluder alle som har hatt leadet)
     const ekskluder = [...tidligere, lead.montor];
     const m = await finnMontor(url, key, lead.tjeneste, lead.kommune, ekskluder);
-    if (!m)
-      return res.status(200).send(side("Ingen alternativ akkurat nå", "Vi har dessverre ingen annen ledig fagperson for dette i området ditt akkurat nå. Svar på e-posten, så ser vi på det manuelt."));
+    if (!m) {
+      // D1 — tynn kommune (ingen benk): andrevurderingen ER ankeret gjengitt som en målestokk.
+      // Ingen reise, ingen inhabilitet. Nøytralt spenn (ikke en dom over montøren, jf. D4) —
+      // kunden sammenligner selv og kan flagge tilbake til oss (intern tilsyn).
+      const a = await beregnAnker(lead.tjeneste, lead.omfang, lead.kommune).catch(() => null);
+      return res.status(200).send(ankerSide(a));
+    }
 
     // Flytt leadet: ny montør, fersk svar-token (gammel lenke dør), husk forrige montør(er)
     const nyToken = crypto.randomUUID();

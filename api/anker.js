@@ -41,36 +41,39 @@ export function spennFraBotter(rows) {
   return { lav: BOTTE[at(0.25)][0], hoy: BOTTE[at(0.75)][1], n };
 }
 
+// Gjenbrukbar anker-beregning (brukes av dette endepunktet OG av andre-vurdering.js sin D1-gren).
+// Returnerer { tjeneste, kategori, lav, hoy, kilde, nivaa, omrade, n } eller null (ukjent tjeneste).
+export async function beregnAnker(tjeneste, omfang, kommune) {
+  const key = kategoriKey(tjeneste, omfang);
+  const seed = SEED[key];
+  if (!seed) return null;
+  const base = { tjeneste, kategori: key };
+  const url = process.env.SUPABASE_URL, sk = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (url && sk) {
+    const q = `${url}/rest/v1/leads?select=sluttpris,kommune&kategori=eq.${encodeURIComponent(key)}&sluttpris=not.is.null`;
+    // 1) Kommune-nivå — kun hvis nok N (ellers falsk presisjon)
+    if (kommune) {
+      const r = await fetch(`${q}&kommune=eq.${encodeURIComponent(kommune)}`, { headers: sbHeaders(sk) }).catch(() => null);
+      const s = spennFraBotter(r && r.ok ? await r.json() : []);
+      if (s) return { ...base, ...s, kilde: "faktiske", nivaa: "kommune", omrade: kommune };
+    }
+    // 2) Region-nivå (Agder)
+    const r = await fetch(q, { headers: sbHeaders(sk) }).catch(() => null);
+    const s = spennFraBotter(r && r.ok ? await r.json() : []);
+    if (s) return { ...base, ...s, kilde: "faktiske", nivaa: "region", omrade: "Agder" };
+  }
+  // 3) N=0-gulv: statisk estimat
+  return { ...base, lav: seed[0], hoy: seed[1], kilde: "estimat", nivaa: "region", omrade: "Agder", n: 0 };
+}
+
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     const { searchParams } = new URL(req.url, `https://${req.headers.host}`);
-    const tjeneste = searchParams.get("tjeneste");
-    const omfang = searchParams.get("omfang") || null;
-    const kommune = searchParams.get("kommune") || null;
-    const key = kategoriKey(tjeneste, omfang);
-    const seed = SEED[key];
-    if (!seed) return res.status(400).json({ feil: "Ukjent tjeneste" });
-
-    const base = { tjeneste, kategori: key };
-    const url = process.env.SUPABASE_URL, sk = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (url && sk) {
-      const q = `${url}/rest/v1/leads?select=sluttpris,kommune&kategori=eq.${encodeURIComponent(key)}&sluttpris=not.is.null`;
-      // 1) Kommune-nivå — kun hvis nok N (ellers falsk presisjon)
-      if (kommune) {
-        const r = await fetch(`${q}&kommune=eq.${encodeURIComponent(kommune)}`, { headers: sbHeaders(sk) }).catch(() => null);
-        const s = spennFraBotter(r && r.ok ? await r.json() : []);
-        if (s) return res.json({ ...base, ...s, kilde: "faktiske", nivaa: "kommune", omrade: kommune });
-      }
-      // 2) Region-nivå (Agder)
-      const r = await fetch(q, { headers: sbHeaders(sk) }).catch(() => null);
-      const s = spennFraBotter(r && r.ok ? await r.json() : []);
-      if (s) return res.json({ ...base, ...s, kilde: "faktiske", nivaa: "region", omrade: "Agder" });
-    }
-
-    // 3) N=0-gulv: statisk estimat
-    return res.json({ ...base, lav: seed[0], hoy: seed[1], kilde: "estimat", nivaa: "region", omrade: "Agder", n: 0 });
+    const a = await beregnAnker(searchParams.get("tjeneste"), searchParams.get("omfang") || null, searchParams.get("kommune") || null);
+    if (!a) return res.status(400).json({ feil: "Ukjent tjeneste" });
+    return res.json(a);
   } catch (e) {
     console.error(e);
     return res.status(500).json({ feil: "Feil" });

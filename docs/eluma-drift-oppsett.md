@@ -136,6 +136,8 @@ create table enerett_foresporsel (
 );
 ```
 
+**D1 — andrevurdering delt etter benk:** tett kommune → re-tildeling til ekte konkurrent (via `finnMontor`/B1). Tynn kommune (ingen benk) → `andre-vurdering.js` viser ankeret som **nøytral målestokk** (`beregnAnker`), ikke blindvei — ingen reise, ingen dom over montøren (D4). Kunden sammenligner selv.
+
 **B1 — førsterett (ikke absolutt enerett):** `enerett`-tabellen backer nå *førsterett* (semantikk endret, navn beholdt). Holderen får leadet først, men ved avslag (`lead-svar` «nei») eller timeout faller det **automatisk til benken** (`omfordelTilBenk`) — det er dét som skiller førsterett fra monopol. Tynn kommune uten benk: holderen beholder leadet. Timeout-cron er bygget men **ikke aktivert** (B3: ikke i launch): når førsterett går live, sett `CRON_SECRET` og legg i `vercel.json`: `"crons":[{"path":"/api/forsterett-timeout","schedule":"0 7 * * *"}]` (kan kjøres oftere enn daglig på Pro). Kan også kjøres manuelt: `GET /api/forsterett-timeout?token=ADMIN_TOKEN`.
 
 **C1/C2 — prisanker:** `GET /api/anker?tjeneste=&omfang=&kommune=` returnerer et prisspenn. Faktiske Agder-jobber (fra `sluttpris`, C3) når N≥8, ellers statisk estimat-gulv (`SEED` — oppstartshypoteser, kalibrer mot ekte tall). Vises i trakten (`<Anker>` øverst i kontakt-steget) som resiprositet før kontaktinfo etterspørres. Region default; kommune kun ved nok N.
