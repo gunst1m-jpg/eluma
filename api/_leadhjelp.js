@@ -31,24 +31,25 @@ export const signLead = (id) => signPurpose(id, "andre-vurdering");
 export const verifyLead = (id, sig) => verifyPurpose(id, sig, "andre-vurdering");
 
 // Finn montør for (auto)tildeling. Returnerer { partnerId, firma, kilde } eller null.
-// 1) Enerett-holder for fag+kommune (eksklusiv).  2) Ellers en partner som DEKKER kommunen
-//    for faget — lastbalansert på færrest leads denne måneden, eldste partner som tie-break.
-// `ekskluder` = partner-id-er som IKKE skal velges (brukes ved "andre vurdering" så vi aldri
-//    sender til samme montør to ganger). Viktig: finnes en enerett-holder og den er ekskludert,
-//    returnerer vi null — eneretten ER eksklusiv, så det finnes ingen alternativ i den kommunen.
+// 1) FØRSTERETT-holder for fag+kommune (får leadet FØRST).  2) Ellers en partner som DEKKER
+//    kommunen for faget — lastbalansert på færrest leads denne måneden, eldste partner som tie-break.
+// `ekskluder` = partner-id-er som IKKE skal velges (avslag/timeout/andre-vurdering, så vi aldri
+//    sender til samme montør to ganger). B1: er førsterett-holderen ekskludert, faller vi IKKE
+//    dead — vi går videre til benken (dekning). Det er nettopp dét som skiller førsterett fra
+//    absolutt enerett. Er benken tom (tynn kommune), returnerer vi null (→ D1: ankeret tar over).
+//    NB: tabellen heter fortsatt `enerett`, men semantikken er nå førsterett (rename utsatt).
 export async function finnMontor(url, key, tjeneste, kommune, ekskluder = []) {
   const headers = sbHeaders(key);
   const ekskl = new Set((ekskluder || []).filter(Boolean));
 
-  // 1) Enerett-holder
+  // 1) Førsterett-holder (får leadet først). Er de ekskludert → fall videre til benken (B1).
   const eR = await fetch(
     `${url}/rest/v1/enerett?select=partner_id,firma&fag=eq.${encodeURIComponent(tjeneste)}&kommune=eq.${encodeURIComponent(kommune)}&limit=1`,
     { headers }
   );
   const e = eR.ok ? (await eR.json())[0] : null;
-  if (e && e.partner_id) {
-    if (ekskl.has(e.partner_id)) return null; // allerede prøvd → ingen andre vurdering i enerett-kommune
-    return { partnerId: e.partner_id, firma: e.firma || null, kilde: "enerett" };
+  if (e && e.partner_id && !ekskl.has(e.partner_id)) {
+    return { partnerId: e.partner_id, firma: e.firma || null, kilde: "forsterett" };
   }
 
   // 2) Deknings-partnere: dekning inneholder kommunen OG fag inneholder tjenesten
@@ -103,6 +104,27 @@ export async function varsleMontor(url, key, montorId, lead) {
     console.error("Montør-varsel feilet (tildeling er lagret):", e);
     return false;
   }
+}
+
+// Omfordel et lead til neste egnet montør på benken (nåværende + tidligere ekskludert).
+// Brukes ved montør-avslag (lead-svar) og førsterett-timeout (forsterett-timeout). Single-send bevart:
+// leadet flyttes, aldri kopieres. Fersk svar-token (gammel montørs lenke dør). Ny montør varsles.
+// Returnerer { ok:true, montor } eller { ok:false, grunn:"ingen-benk"|"lagring" } (tynn kommune = ingen-benk).
+export async function omfordelTilBenk(url, key, lead) {
+  const tidligere = Array.isArray(lead.tidligere_montorer) ? lead.tidligere_montorer : [];
+  const ekskluder = [...tidligere, lead.montor].filter(Boolean);
+  const m = await finnMontor(url, key, lead.tjeneste, lead.kommune, ekskluder);
+  if (!m) return { ok: false, grunn: "ingen-benk" };
+  const nyToken = crypto.randomUUID();
+  const opp = await fetch(`${url}/rest/v1/leads?id=eq.${encodeURIComponent(lead.id)}`, {
+    method: "PATCH",
+    headers: { ...sbHeaders(key), Prefer: "return=representation" },
+    body: JSON.stringify({ montor: m.partnerId, status: "tildelt", svar_token: nyToken, tidligere_montorer: ekskluder }),
+  });
+  if (!opp.ok) { console.error("Omfordeling feilet:", await opp.text()); return { ok: false, grunn: "lagring" }; }
+  const nyLead = (await opp.json().catch(() => []))[0] || { ...lead, montor: m.partnerId, svar_token: nyToken };
+  await varsleMontor(url, key, m.partnerId, nyLead).catch((e) => console.error("Varsel til ny montør feilet:", e));
+  return { ok: true, montor: m };
 }
 
 export function montorHtml(lead, firma) {

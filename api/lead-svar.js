@@ -1,9 +1,10 @@
 // /api/lead-svar.js — montørens svar fra e-posten: ta leadet (svar=ja) eller takk nei (svar=nei).
 // Offentlig (montøren har ingen innlogging) — sikret med en engangs svar-token lagret på leadet.
-// Setter status ("akseptert"/"avslatt"), nuller token (engangsbruk) og viser en enkel bekreftelsesside.
-// Avslag setter leadet tilbake til en tildelbar tilstand i admin, klar for ny montør (single-send).
+// "ja" → status akseptert. "nei" → B1: leadet faller AUTOMATISK til benken (omfordelTilBenk);
+// finnes ingen benk (tynn kommune) settes status avslatt for manuell håndtering. Token er engangsbruk.
 //
-// Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+// Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, VARSEL_FRA
+import { omfordelTilBenk } from "./_leadhjelp.js";
 
 function sbHeaders(key) {
   return { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
@@ -40,9 +41,9 @@ export default async function handler(req, res) {
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // Hent leadet og sjekk at token stemmer og ikke er brukt
+    // Hent HELE leadet (trengs for omfordeling ved avslag) og sjekk token
     const r = await fetch(
-      `${url}/rest/v1/leads?id=eq.${encodeURIComponent(id)}&select=svar_token,status`,
+      `${url}/rest/v1/leads?id=eq.${encodeURIComponent(id)}&select=*`,
       { headers: sbHeaders(key) }
     );
     const rader = r.ok ? await r.json() : [];
@@ -50,23 +51,38 @@ export default async function handler(req, res) {
     if (!lead || !lead.svar_token || lead.svar_token !== token)
       return res.status(200).send(side("Allerede besvart", "Dette leadet er allerede behandlet, eller lenken er utløpt."));
 
-    // Sett status og forbruk token (engangsbruk)
-    const nyStatus = svar === "ja" ? "akseptert" : "avslatt";
-    const opp = await fetch(`${url}/rest/v1/leads?id=eq.${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      headers: { ...sbHeaders(key), Prefer: "return=minimal" },
-      body: JSON.stringify({ status: nyStatus, svar_token: null }),
-    });
-    if (!opp.ok) {
-      console.error("Supabase-feil:", await opp.text());
-      return res.status(500).send(side("Noe gikk galt", "Prøv igjen om litt, eller ta kontakt med oss."));
+    // --- "ja": montøren tar leadet ---
+    if (svar === "ja") {
+      const opp = await fetch(`${url}/rest/v1/leads?id=eq.${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        headers: { ...sbHeaders(key), Prefer: "return=minimal" },
+        body: JSON.stringify({ status: "akseptert", svar_token: null }),
+      });
+      if (!opp.ok) {
+        console.error("Supabase-feil:", await opp.text());
+        return res.status(500).send(side("Noe gikk galt", "Prøv igjen om litt, eller ta kontakt med oss."));
+      }
+      return res.status(200).send(side("Leadet er ditt", "Takk! Vi har notert at du tar dette leadet. Ta kontakt med kunden så snart du kan."));
     }
 
-    return res.status(200).send(
-      svar === "ja"
-        ? side("Leadet er ditt", "Takk! Vi har notert at du tar dette leadet. Ta kontakt med kunden så snart du kan.")
-        : side("Helt greit", "Takk for raskt svar. Vi sender leadet videre til en annen fagperson — uten kostnad for deg.")
-    );
+    // --- "nei": forbruk token (montørens lenke dør) og la leadet falle til benken (B1) ---
+    await fetch(`${url}/rest/v1/leads?id=eq.${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { ...sbHeaders(key), Prefer: "return=minimal" },
+      body: JSON.stringify({ svar_token: null }),
+    }).catch((e) => console.error("Token-nulling feilet:", e));
+
+    const omf = await omfordelTilBenk(url, key, lead);
+    if (omf.ok)
+      return res.status(200).send(side("Helt greit", "Takk for raskt svar. Vi har sendt leadet videre til en annen fagperson — uten kostnad for deg."));
+
+    // Ingen benk (tynn kommune) → sett avslatt for manuell håndtering i admin
+    await fetch(`${url}/rest/v1/leads?id=eq.${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { ...sbHeaders(key), Prefer: "return=minimal" },
+      body: JSON.stringify({ status: "avslatt" }),
+    }).catch((e) => console.error("Status-oppdatering feilet:", e));
+    return res.status(200).send(side("Helt greit", "Takk for raskt svar. Vi finner noen andre som kan hjelpe kunden — uten kostnad for deg."));
   } catch (e) {
     console.error(e);
     return res.status(500).send(side("Noe gikk galt", "Prøv igjen om litt."));

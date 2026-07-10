@@ -136,6 +136,8 @@ create table enerett_foresporsel (
 );
 ```
 
+**B1 — førsterett (ikke absolutt enerett):** `enerett`-tabellen backer nå *førsterett* (semantikk endret, navn beholdt). Holderen får leadet først, men ved avslag (`lead-svar` «nei») eller timeout faller det **automatisk til benken** (`omfordelTilBenk`) — det er dét som skiller førsterett fra monopol. Tynn kommune uten benk: holderen beholder leadet. Timeout-cron er bygget men **ikke aktivert** (B3: ikke i launch): når førsterett går live, sett `CRON_SECRET` og legg i `vercel.json`: `"crons":[{"path":"/api/forsterett-timeout","schedule":"0 7 * * *"}]` (kan kjøres oftere enn daglig på Pro). Kan også kjøres manuelt: `GET /api/forsterett-timeout?token=ADMIN_TOKEN`.
+
 **C1/C2 — prisanker:** `GET /api/anker?tjeneste=&omfang=&kommune=` returnerer et prisspenn. Faktiske Agder-jobber (fra `sluttpris`, C3) når N≥8, ellers statisk estimat-gulv (`SEED` — oppstartshypoteser, kalibrer mot ekte tall). Vises i trakten (`<Anker>` øverst i kontakt-steget) som resiprositet før kontaktinfo etterspørres. Region default; kommune kun ved nok N.
 
 **C3 — utfallsfangst (kjør `supabase/utfall.sql`):** legger til `fornoyd`, `sluttpris` (bøtte), `testimonial`, `utfall_tidspunkt` på `leads`. Kunden fyller dem via `/api/utfall?id=&sig=` (signert lenke, hensikt `utfall`). Send lenken med `POST /api/utfall {send:true, id, admin_token:ADMIN_TOKEN}` (manuelt/cron). Kilden er **kunden**, ikke montøren — se `modell-beslutninger.md` C3.

@@ -119,6 +119,6 @@ automatisk kryssekommune-re-tildeling · full estimat-kalkulator (start med stat
 ## Kodeendringer som følger (når ratifisert)
 1. ✅ **C3 LEVERT (2026-07-10):** `supabase/utfall.sql` (kolonner) + `api/utfall.js` (kunde-endepunkt, gjenbruker `signPurpose`/`verifyPurpose`). Gjenstår: kjør SQL i Supabase, og automatiser utsending (Vercel Cron: befaring → +N uker) — nå manuelt via admin-POST.
 2. ✅ **C1/C2 LEVERT (2026-07-10):** `api/anker.js` (fallback-stige: faktiske Agder-jobber → estimat-gulv; robust bøtte-IQR; region default, kommune kun ved N≥8) + `<Anker>` i `App.jsx` (vist øverst i kontakt-steget = resiprositet før vi spør). Seed-tallene er oppstartshypoteser — kalibreres når C3-dataen kommer inn.
-3. Enerett-maskineriet nedgraderes til førsterett / hylles for launch (B1/B3).
+3. ✅ **B1 LEVERT (2026-07-10):** `finnMontor` faller nå til benken når førsterett-holderen er ekskludert (før: dead-end). Avslag (`lead-svar` «nei») og timeout (`api/forsterett-timeout.js`) omfordeler automatisk via delt `omfordelTilBenk`. `enerett`-tabellen backer førsterett (navn beholdt, rename utsatt). Cron bygget men ikke aktivert (B3). B2 (fornybar pakt i montøravtale) er terms, ikke kode.
 4. `andre-vurdering.js` deles etter benk-tetthet (D1).
 5. Konsentrasjons- og metode-rapport (E1/E2) — senere, når det finnes data.
