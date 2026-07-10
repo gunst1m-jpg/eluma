@@ -1,8 +1,10 @@
 # Eluma — modell-beslutninger (v1)
 
-Destillat av strategidiskusjonen 2026-07-10. Status per punkt: **Foreslått** til du
-ratifiserer. Dette dokumentet er ment å styre koden — endrer vi modellen, oppdateres dette
+Destillat av strategidiskusjonen 2026-07-10. **Status: RATIFISERT 2026-07-10** (A1–F, alle
+punkter). Dette dokumentet er ment å styre koden — endrer vi modellen, oppdateres dette
 først (samme disiplin som `agder-leadmotor-spesifikasjon.md`).
+
+> Endrer noe av dette senere: sett punktet til «Revidert <dato>» med begrunnelse, ikke slett.
 
 ---
 
