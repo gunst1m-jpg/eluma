@@ -136,6 +136,8 @@ create table enerett_foresporsel (
 );
 ```
 
+**C1/C2 — prisanker:** `GET /api/anker?tjeneste=&omfang=&kommune=` returnerer et prisspenn. Faktiske Agder-jobber (fra `sluttpris`, C3) når N≥8, ellers statisk estimat-gulv (`SEED` — oppstartshypoteser, kalibrer mot ekte tall). Vises i trakten (`<Anker>` øverst i kontakt-steget) som resiprositet før kontaktinfo etterspørres. Region default; kommune kun ved nok N.
+
 **C3 — utfallsfangst (kjør `supabase/utfall.sql`):** legger til `fornoyd`, `sluttpris` (bøtte), `testimonial`, `utfall_tidspunkt` på `leads`. Kunden fyller dem via `/api/utfall?id=&sig=` (signert lenke, hensikt `utfall`). Send lenken med `POST /api/utfall {send:true, id, admin_token:ADMIN_TOKEN}` (manuelt/cron). Kilden er **kunden**, ikke montøren — se `modell-beslutninger.md` C3.
 
 Feltet `leads.montor` lagrer nå **partner-id** (ikke firmanavn) — robust mot navnebytte og navnekrasj; admin og portal viser firma ved å slå opp id-en. Har du gamle test-leads med firmanavn i `montor`, nullstill eller tildel dem på nytt.

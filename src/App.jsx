@@ -387,6 +387,7 @@ export default function App() {
             {steg === 4 && (
               <>
                 <h2 className="el-h2">Hvor sender vi tilbudet?</h2>
+                <Anker tjeneste={d.tjeneste} omfang={d.omfang} kommune={d.kommune} />
                 <label className="el-felt"><span>Navn</span><input className="el-input" value={d.navn} onChange={(e) => set("navn", e.target.value)} /></label>
                 <label className="el-felt"><span>Mobil</span><input className="el-input" inputMode="tel" value={d.mobil} onChange={(e) => set("mobil", e.target.value)} /></label>
                 <label className="el-felt"><span>E-post <em>(valgfritt)</em></span><input className="el-input" inputMode="email" value={d.epost} onChange={(e) => set("epost", e.target.value)} /></label>
@@ -426,6 +427,49 @@ export default function App() {
       )}
 
       {steg !== 0 && <footer className="el-bunn">Eksempel-case og tall byttes med faktiske referanser fra lokale fagfolk før lansering.</footer>}
+    </div>
+  );
+}
+
+// Prisanker (beslutning C1/C2): vis verdi FØR vi ber om kontaktinfo (resiprositet).
+// Regionalt som default; datadrevet fra /api/anker, statisk estimat-gulv som fallback (også i stub/dev).
+// Hold ANKER_SEED i synk med SEED i api/anker.js.
+const ANKER_SEED = {
+  solceller: [90000, 170000], batteri: [40000, 90000], elbillader: [12000, 22000],
+  smarthus_strom: [8000, 25000], smarthus_enkel: [5000, 20000],
+  elektriker_storre: [15000, 60000], elektriker_mindre: [2000, 12000],
+};
+function ankerKategori(tjeneste, omfang) {
+  if (tjeneste === "elektriker") return "elektriker_" + (omfang || "mindre");
+  if (tjeneste === "smarthus") return "smarthus_" + (omfang || "enkel");
+  return tjeneste;
+}
+function Anker({ tjeneste, omfang, kommune }) {
+  const seed = ANKER_SEED[ankerKategori(tjeneste, omfang)];
+  const [a, setA] = useState(seed ? { lav: seed[0], hoy: seed[1], kilde: "estimat", omrade: "Agder" } : null);
+  useEffect(() => {
+    if (!tjeneste) return;
+    let av = false;
+    const p = new URLSearchParams({ tjeneste });
+    if (omfang) p.set("omfang", omfang);
+    if (kommune) p.set("kommune", kommune);
+    fetch("/api/anker?" + p.toString())
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (!av && j && !j.feil) setA(j); })
+      .catch(() => {});
+    return () => { av = true; };
+  }, [tjeneste, omfang, kommune]);
+  if (!a) return null;
+  const kr = (n) => Number(n).toLocaleString("nb-NO");
+  return (
+    <div style={{ background: "rgba(198,242,78,.08)", border: "1px solid rgba(198,242,78,.25)", borderRadius: 14, padding: "13px 16px", margin: "0 0 18px" }}>
+      <div style={{ fontSize: 12, letterSpacing: ".04em", textTransform: "uppercase", color: "#C6F24E", marginBottom: 3 }}>Typisk i {a.omrade || "Agder"}</div>
+      <div style={{ fontSize: 22, fontWeight: 700, color: "#F4F3EE", marginBottom: 6 }}>{kr(a.lav)}–{kr(a.hoy)} kr</div>
+      <div style={{ fontSize: 12.5, lineHeight: 1.5, color: "rgba(244,243,238,.6)" }}>
+        {a.kilde === "faktiske" ? "Basert på faktiske Agder-jobber. " : "Anslag. "}
+        Ferdig montert, varierer med jobben — endelig pris settes ved gratis befaring.
+        {tjeneste === "solceller" ? " Enova-støtte kommer i tillegg." : ""}
+      </div>
     </div>
   );
 }
