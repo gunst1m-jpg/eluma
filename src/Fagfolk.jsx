@@ -353,7 +353,7 @@ export default function App() {
 
               <label className="el-samtykke">
                 <input type="checkbox" checked={d.samtykke} onChange={(e) => set("samtykke", e.target.checked)} />
-                <span>Det er greit at Eluma kontakter meg om partnerskap.</span>
+                <span>Det er greit at Eluma kontakter meg om partnerskap. Se <a href="/personvern" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} style={{ color: "var(--lime)", textDecoration: "underline" }}>personvern</a>.</span>
               </label>
 
               {feil && <p className="el-feil">Noe gikk galt under sendingen. Prøv igjen, eller ring oss.</p>}

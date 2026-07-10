@@ -393,7 +393,7 @@ export default function App() {
                 <label className="el-felt"><span>E-post <em>(valgfritt)</em></span><input className="el-input" inputMode="email" value={d.epost} onChange={(e) => set("epost", e.target.value)} /></label>
                 <label className="el-samtykke">
                   <input type="checkbox" checked={d.samtykke} onChange={(e) => set("samtykke", e.target.checked)} />
-                  <span>Jeg samtykker til at kontaktinfoen min deles med én lokal fagperson som kan gi meg et tilbud. Se <button className="el-inline-link" type="button">personvern</button>.</span>
+                  <span>Jeg samtykker til at kontaktinfoen min deles med én lokal fagperson som kan gi meg et tilbud. Se <a className="el-inline-link" href="/personvern" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()}>personvern</a>.</span>
                 </label>
               </>
             )}

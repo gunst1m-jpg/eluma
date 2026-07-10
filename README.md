@@ -61,7 +61,7 @@ Byggeskallet er på plass og bygger rent. Det som gjenstår for en faktisk live-
 - [ ] Supabase: opprett prosjekt + kjør `create table`-snuttene (`docs/eluma-drift-oppsett.md` §3)
 - [ ] Vercel: sett de 8 env-variablene (`.env.example`) + deploy
 - [ ] `public/` — OG-delingsbilde, logo, caser-bilder (referanser)
-- [ ] Personvern: egen `/personvern`-rute/side (spec §5 krever den tilgjengelig fra skjemaet)
+- [x] ~~Personvern: egen `/personvern`-rute/side~~ — levert (`src/Personvern.jsx`, lenket fra samtykke i App + Fagfolk). Fyll inn `[ ]`-plassholderne (org.nr, adresse, lagringstid) før launch.
 - [ ] Kalibrer estimat- og prishypotesene mot Agder Taks faktiske tall (spec §3, drift §7)
 
 Go-live-rekkefølge og ende-til-ende-test: `docs/eluma-drift-oppsett.md` §4–5.
