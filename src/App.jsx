@@ -281,7 +281,7 @@ export default function App() {
                 ))}
               </div>
 
-              <p className="el-eksklusiv"><strong>Én</strong> lokal fagperson — din alene.</p>
+              <p className="el-eksklusiv">Fortell om jobben, så får du et <strong>ærlig prisanslag</strong> underveis.</p>
               <div className="el-trust">
                 <span>Lokalt i Agder</span><i /><span>Godkjente, forsikrede fagfolk</span><i /><span>Gratis og uforpliktende</span>
               </div>
@@ -295,7 +295,7 @@ export default function App() {
             <div className="el-stepper">
               <div className="el-step"><span className="el-step-nr">1</span><strong>Velg tjeneste</strong><p>Sol, lader, batteri, smarthus eller elektriker.</p></div>
               <div className="el-step"><span className="el-step-nr">2</span><strong>Fortell om jobben</strong><p>Noen spørsmål om behovet — under et minutt.</p></div>
-              <div className="el-step"><span className="el-step-nr">3</span><strong>Vi kobler deg</strong><p>Én lokal fagperson — din alene.</p></div>
+              <div className="el-step"><span className="el-step-nr">3</span><strong>Vi kobler deg</strong><p>En kvalitetssikret lokal fagperson.</p></div>
               <div className="el-step"><span className="el-step-nr">4</span><strong>Få tilbud</strong><p>Gratis og uten forpliktelser.</p></div>
             </div>
           </section>
@@ -312,7 +312,7 @@ export default function App() {
             <h2 className="el-sek-tittel">Spørsmål og svar</h2>
             <div className="el-faq-liste">
               <details className="el-faq"><summary>Hva koster det å bruke Eluma?</summary><p>Ingenting for deg. Fagpersonen betaler for å få seriøse, lokale henvendelser — du får tilbudet gratis og uforpliktende.</p></details>
-              <details className="el-faq"><summary>Blir jeg oppringt av mange selgere?</summary><p>Nei — bare én. Du kobles med én kvalitetssikret lokal fagperson som tar kontakt for et uforpliktende tilbud, i ditt tempo.</p></details>
+              <details className="el-faq"><summary>Hvor mange tar kontakt med meg?</summary><p>Bare én — den lokale fagpersonen vi matcher deg med. Ett tilbud, i ditt tempo.</p></details>
               <details className="el-faq"><summary>Hvilke områder dekker dere?</summary><p>Hele Agder. Vi bruker bare lokale fagfolk som kjenner området.</p></details>
               <details className="el-faq"><summary>Får jeg Enova-støtte på solceller?</summary><p>Ja — Enova støtter solceller med 25 % av kostnaden, maks 2 500 kr per kWp. Viktig: søk forhåndsgodkjenning fra Enova <strong>før</strong> du signerer kontrakt — signerer du for tidlig, mister du støtten. Fagpersonen hjelper deg gjennom det.</p></details>
             </div>
@@ -416,7 +416,7 @@ export default function App() {
         <main className="el-kort el-slutt">
           <div className="el-hake"><Hake /></div>
           <h2 className="el-h2">Takk, {d.navn.split(" ")[0] || "da er det sendt"}!</h2>
-          <p className="el-brod">En lokal fagperson tar kontakt med deg om {tjeneste.t ? tjeneste.t.toLowerCase() : "jobben"} for et uforpliktende tilbud. Du hører fra én — din alene.</p>
+          <p className="el-brod">En kvalitetssikret lokal fagperson tar kontakt med deg om {tjeneste.t ? tjeneste.t.toLowerCase() : "jobben"} for et uforpliktende tilbud.</p>
           <details className="el-intern">
             <summary>Internt · lead-objektet (vises ikke til kunden)</summary>
             <div className="el-intern-nokkel"><span>tjeneste</span><code className="premium">{d.tjeneste}{HAR_OMFANG(d.tjeneste) && d.omfang ? " · " + d.omfang : ""}</code><span>score</span><code className={score >= 0.7 ? "varm" : ""}>{score}</code><span>intensjon</span><code>{intens.navn}</code><span>leadverdi</span><code className="premium">{leadverdi} kr</code></div>
