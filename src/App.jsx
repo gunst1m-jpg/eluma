@@ -435,7 +435,7 @@ export default function App() {
 // Regionalt som default; datadrevet fra /api/anker, statisk estimat-gulv som fallback (også i stub/dev).
 // Hold ANKER_SEED i synk med SEED i api/anker.js.
 const ANKER_SEED = {
-  solceller: [90000, 170000], batteri: [40000, 90000], elbillader: [12000, 22000],
+  solceller: [100000, 250000], batteri: [40000, 90000], elbillader: [12000, 22000], // solceller kalibrert mot Agder Tak (100–300k, 15 kr/W)
   smarthus_strom: [8000, 25000], smarthus_enkel: [5000, 20000],
   elektriker_storre: [15000, 60000], elektriker_mindre: [2000, 12000],
 };

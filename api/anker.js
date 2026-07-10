@@ -9,7 +9,7 @@ import { sbHeaders } from "./_leadhjelp.js";
 // Hold nøklene i synk med `kategori` i lead.js (elektriker_*, smarthus_*, ellers tjeneste),
 // og med ANKER_SEED i App.jsx.
 export const SEED = {
-  solceller: [90000, 170000],
+  solceller: [100000, 250000],  // kalibrert mot Agder Tak: 100–300k inkl. montering (15 kr/W); topp trimmet til «typisk»
   batteri: [40000, 90000],
   elbillader: [12000, 22000],
   smarthus_strom: [8000, 25000],
