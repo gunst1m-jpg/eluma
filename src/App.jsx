@@ -194,15 +194,21 @@ export default function App() {
   const [sender, setSender] = useState(false);
   const [feil, setFeil] = useState(false);
   const [scrollet, setScrollet] = useState(false);
+  const [forbiHero, setForbiHero] = useState(false); // topbar-CTA vises først når hero er scrollet forbi
   const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const heroRef = useRef(null);
   useEffect(() => {
-    const onScroll = () => setScrollet(window.scrollY > 16);
+    const onScroll = () => {
+      setScrollet(window.scrollY > 16);
+      const h = heroRef.current;
+      setForbiHero(h ? h.getBoundingClientRect().bottom < 64 : true); // ingen hero (trakt-steg) → alltid synlig
+    };
     const onResize = () => setVw(window.innerWidth);
     onScroll(); onResize();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); };
-  }, []);
+  }, [steg]);
   // Logo-høyde som alltid får plass i det mørke kortet (kvantisert for å unngå churn ved resize)
   const bigLogoH = Math.max(40, Math.min(80, Math.round((Math.round(vw / 20) * 20 - 96) * 0.17)));
   const set = (k, v) => setD((p) => ({ ...p, [k]: v }));
@@ -253,14 +259,14 @@ export default function App() {
         <span className="el-merke" onClick={tilForsiden}>
           <ElumaLogo height={30} theme="dark" />
         </span>
-        <button className="el-topp-cta" onClick={tilForsiden}>Kom i gang</button>
+        <button className={"el-topp-cta" + (forbiHero ? " synlig" : "")} onClick={tilForsiden}>Kom i gang</button>
       </header>
 
       {/* LANDING */}
       {steg === 0 && (
         <>
           {/* HERO — mørk panel med rutenett + glød */}
-          <main className="el-hero">
+          <main className="el-hero" ref={heroRef}>
             <div className="el-hero-grid" aria-hidden />
             <div className="el-hero-glow" aria-hidden />
             <div className="el-hero-inner">
@@ -538,7 +544,9 @@ body{display:block;min-height:auto;place-items:initial;text-align:left;}
 .el-topp.scrollet::after{opacity:1;}
 .el-merke{position:relative;display:inline-flex;align-items:center;gap:11px;cursor:pointer;}
 .el-topp-cta{position:relative;font-family:'Hanken Grotesk',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;
-  color:var(--ink);background:var(--lime);border:none;border-radius:999px;padding:10px 20px;cursor:pointer;transition:transform .12s, background .2s, box-shadow .2s;}
+  color:var(--ink);background:var(--lime);border:none;border-radius:999px;padding:10px 20px;cursor:pointer;
+  opacity:0;pointer-events:none;transition:transform .12s, background .2s, box-shadow .2s, opacity .28s ease;}
+.el-topp-cta.synlig{opacity:1;pointer-events:auto;}
 .el-topp-cta:hover{background:var(--lime-myk);box-shadow:0 0 22px -6px rgba(198,242,78,.6);}
 .el-topp-cta:active{transform:scale(.97);}
 
