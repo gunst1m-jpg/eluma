@@ -34,6 +34,8 @@ infra, tall og innhold som krever dine kontoer og beslutninger. Sist oppdatert 2
         `enerett`, `partner_token`, `enerett_foresporsel` + `alter`-ene)
   - [ ] [`supabase/utfall.sql`](supabase/utfall.sql) (C3-kolonnene: `fornoyd`, `sluttpris`,
         `testimonial`, `utfall_tidspunkt`)
+  - [ ] [`supabase/epost-endre.sql`](supabase/epost-endre.sql) (`epost_endring`-tabellen for
+        verifisert e-post-bytte i portalen)
   - [ ] Kopier `SUPABASE_URL` + `service_role`-nøkkel (Settings → API)
 - [ ] **Resend** — opprett konto + API-nøkkel. Til test holder `onboarding@resend.dev`; til
       produksjon, verifiser domenet så du kan sende fra `varsel@eluma.no`.

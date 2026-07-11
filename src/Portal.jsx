@@ -188,6 +188,8 @@ export default function Portal() {
   const [formNavn, setFormNavn] = useState("");
   const [formMobil, setFormMobil] = useState("");
   const [lagrer, setLagrer] = useState(false);
+  const [formEpost, setFormEpost] = useState("");
+  const [senderEpost, setSenderEpost] = useState(false);
 
   useEffect(() => { sjekk(); }, []);
 
@@ -225,7 +227,22 @@ export default function Portal() {
   const velgFane = (f) => { setFane(f); setFeil(""); setInfo(""); setRedigerer(false); if (f === "abonnement" && !abo && !demo) hentAbonnement(); if (f === "forbruk" && !forbruk && !demo) hentForbruk(); };
 
   // Profil: kun navn + mobil er redigerbare (hvitliste, speiler backend). Resten låst.
-  const startRediger = () => { setFormNavn(partner?.navn || ""); setFormMobil(partner?.mobil || ""); setFeil(""); setInfo(""); setRedigerer(true); };
+  const startRediger = () => { setFormNavn(partner?.navn || ""); setFormMobil(partner?.mobil || ""); setFormEpost(partner?.epost || ""); setFeil(""); setInfo(""); setRedigerer(true); };
+  // E-post = innloggingsidentitet → endres verifisert: bekreftelseslenke til NY adresse, byttes først ved klikk.
+  const endreEpost = async () => {
+    const ny = formEpost.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ny)) { setFeil("Skriv en gyldig e-post."); return; }
+    if (ny === (partner?.epost || "").toLowerCase()) { setFeil("Dette er allerede e-posten din."); return; }
+    setSenderEpost(true); setFeil("");
+    if (demo) { setSenderEpost(false); setInfo(`(Demo) En bekreftelseslenke ville blitt sendt til ${ny}.`); return; }
+    try {
+      const r = await fetch("/api/portal/epost-endre", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nyEpost: ny }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { setFeil(d.feil || "Kunne ikke sende bekreftelse."); return; }
+      setInfo(d.melding || "Sjekk den nye e-posten for en bekreftelseslenke.");
+    } catch { setFeil("Nettverksfeil. Prøv igjen."); }
+    finally { setSenderEpost(false); }
+  };
   const lagreProfil = async () => {
     const navn = formNavn.trim(), mobil = formMobil.trim();
     if (!navn) { setFeil("Navn kan ikke være tomt."); return; }
@@ -532,7 +549,12 @@ export default function Portal() {
                   <div><dt>Mobil</dt><dd>{redigerer
                     ? <input className="pt-inline-input" inputMode="tel" value={formMobil} onChange={(e) => setFormMobil(e.target.value)} />
                     : (partner.mobil || "—")}</dd></div>
-                  <div><dt>E-post</dt><dd>{partner.epost || "—"}{redigerer ? <span className="pt-laas-note"> · endre? ta kontakt</span> : null}</dd></div>
+                  <div><dt>E-post</dt><dd>{redigerer
+                    ? <span className="pt-epost-rad">
+                        <input className="pt-inline-input" inputMode="email" value={formEpost} onChange={(e) => setFormEpost(e.target.value)} />
+                        <button className="pt-mini" onClick={endreEpost} disabled={senderEpost || !formEpost.trim() || formEpost.trim().toLowerCase() === (partner.epost || "").toLowerCase()}>{senderEpost ? "…" : "Send bekreftelse"}</button>
+                      </span>
+                    : (partner.epost || "—")}</dd></div>
                   <div><dt>Fag</dt><dd>{fag.map((f) => FAG_NAVN[f] || f).join(" · ") || "—"}</dd></div>
                   <div><dt>Dekning</dt><dd>{dekning.length ? dekning.join(", ") : "Ingen kommuner valgt ennå"}</dd></div>
                   <div><dt>Status</dt><dd>{partner.status ? partner.status.charAt(0).toUpperCase() + partner.status.slice(1) : "—"}</dd></div>
@@ -540,7 +562,7 @@ export default function Portal() {
               </div>
               {redigerer
                 ? <button className="pt-knapp-lys" onClick={lagreProfil} disabled={lagrer}>{lagrer ? "Lagrer …" : "Lagre endringer"}</button>
-                : <p className="pt-fot">Fag og dekning endrer du under <strong>Abonnement &amp; områder</strong>. Firma, org.nr og e-post er låst — noe feil? Ta kontakt, så retter vi det.</p>}
+                : <p className="pt-fot">Ny e-post krever bekreftelse på den nye adressen før den tas i bruk. Fag og dekning endrer du under <strong>Abonnement &amp; områder</strong>. Firma og org.nr er låst — noe feil? Ta kontakt.</p>}
             </>
           )}
         </main>
@@ -685,6 +707,7 @@ const css = `
 .pt-felt select:disabled{opacity:.5;cursor:default;}
 .pt-inline-input{font:inherit;font-size:15px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);width:100%;max-width:240px;outline:none;}
 .pt-inline-input:focus-visible{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,242,78,.2);}
+.pt-epost-rad{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .pt-laas-note{color:var(--sub);font-size:12.5px;}
 .pt-sjekk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer;}
 .pt-sjekk input{width:16px;height:16px;accent-color:#5d7a1f;}
