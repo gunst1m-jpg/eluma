@@ -265,7 +265,7 @@ export default function Portal() {
     setFeil(""); setInfo("");
     const har = (abo?.dekning || []).includes(k);
     const eKom = new Set((abo?.enerett || []).map((e) => e.kommune));
-    if (har && eKom.has(k)) { setFeil(`Du har enerett i ${k} — fjern eneretten først.`); return; }
+    if (har && eKom.has(k)) { setFeil(`Du har førsterett i ${k} — fjern førsteretten først.`); return; }
     const ny = har ? abo.dekning.filter((x) => x !== k) : [...(abo.dekning || []), k];
     setAbo((a) => ({ ...a, dekning: ny })); // optimistisk
     if (demo) return;
@@ -381,7 +381,7 @@ export default function Portal() {
           ) : fane === "abonnement" ? (
             <>
               <h1 className="pt-hei">Abonnement & områder</h1>
-              <p className="pt-und">Be om enerett i kommunene du vil eie. Vi bekrefter forespørselen — da er du den eneste Eluma-partneren for det faget i den kommunen.</p>
+              <p className="pt-und">Be om førsterett i kommunene der du vil stå først i køen. Vi bekrefter forespørselen — da får du hvert nytt lead i faget ditt der først, og beholder forspranget ved å svare raskt.</p>
               {info && <p className="pt-info">{info}</p>}
               {feil && <p className="pt-feil pt-feil-rad">{feil}</p>}
 
@@ -391,7 +391,7 @@ export default function Portal() {
                 <>
                   <div className="pt-kort">
                     <p className="pt-merk">Dekningsområde</p>
-                    <p className="pt-dek-hjelp">Velg kommunene du vil få leads i. Kommuner du har enerett i er låst.</p>
+                    <p className="pt-dek-hjelp">Velg kommunene du vil få leads i. Kommuner du har førsterett i er låst.</p>
                     <div className="pt-kommuner">
                       {KOMMUNER.map((k) => {
                         const valgt = (abo.dekning || []).includes(k);
@@ -399,7 +399,7 @@ export default function Portal() {
                         return (
                           <button key={k} type="button" disabled={laast}
                             className={"pt-kchip" + (valgt ? " valgt" : "") + (laast ? " laast" : "")}
-                            title={laast ? "Du har enerett her — kan ikke fjernes" : ""}
+                            title={laast ? "Du har førsterett her — kan ikke fjernes" : ""}
                             onClick={() => vekslDekning(k)}>
                             {k}{laast ? " ✓" : ""}
                           </button>
@@ -408,9 +408,9 @@ export default function Portal() {
                     </div>
                   </div>
                   <div className="pt-kort">
-                    <p className="pt-merk">Dine områder med enerett</p>
+                    <p className="pt-merk">Dine områder med førsterett</p>
                     {abo.enerett.length === 0 ? (
-                      <p className="pt-tom-und">Du har ingen enerett ennå. Be om din første nedenfor.</p>
+                      <p className="pt-tom-und">Du har ingen førsterett ennå. Be om din første nedenfor.</p>
                     ) : (
                       <ul className="pt-omr">
                         {abo.enerett.map((e, i) => (
@@ -438,7 +438,7 @@ export default function Portal() {
                   )}
 
                   <div className="pt-kort">
-                    <p className="pt-merk">Be om enerett</p>
+                    <p className="pt-merk">Be om førsterett</p>
                     <div className="pt-skjema">
                       <label className="pt-felt"><span>Kommune</span>
                         <select value={reqKommune} onChange={(e) => setReqKommune(e.target.value)}>
@@ -456,10 +456,10 @@ export default function Portal() {
                       {reqKommune && (opptattNa
                         ? <p className="pt-opptatt">Opptatt i {reqKommune} akkurat nå — ikke ledig.</p>
                         : <p className="pt-pris-prev">{nok(enerettPris(reqKommune))}/mnd{reqHel ? " · for alle dine fag i kommunen" : ""}</p>)}
-                      <button className="pt-knapp-lys" onClick={sendForesporsel} disabled={!reqKommune || (!reqHel && !reqFag) || opptattNa}>Be om enerett</button>
+                      <button className="pt-knapp-lys" onClick={sendForesporsel} disabled={!reqKommune || (!reqHel && !reqFag) || opptattNa}>Be om førsterett</button>
                     </div>
                   </div>
-                  <p className="pt-fot">Prisene er veiledende og avtales endelig med oss. Enerett er uten binding — du kan si den opp når som helst.</p>
+                  <p className="pt-fot">Prisene er veiledende og avtales endelig med oss. Førsterett er uten binding — du kan si den opp når som helst.</p>
                 </>
               )}
             </>
@@ -478,7 +478,7 @@ export default function Portal() {
                   <div className="pt-kort">
                     <ul className="pt-omr">
                       <li><span className="pt-omr-navn">Leads tatt ({forbruk.antallTatt})</span><span className="pt-omr-pris">{nok(forbruk.leadKostnad)}</span></li>
-                      <li><span className="pt-omr-navn">Enerett</span><span className="pt-omr-pris">{nok(forbruk.enerettMnd)}/mnd</span></li>
+                      <li><span className="pt-omr-navn">Førsterett</span><span className="pt-omr-pris">{nok(forbruk.enerettMnd)}/mnd</span></li>
                     </ul>
                   </div>
                   <p className="pt-fot">{forbruk.antallNye} venter på svar · {forbruk.antallAvslatt} avslått (ikke belastet). Tallene er veiledende — endelig faktura sendes månedlig.</p>
@@ -541,6 +541,7 @@ export default function Portal() {
 }
 
 const css = `
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Unbounded:wght@600;700&display=swap');
 :root{--ink:#191C19;--paper:#F4F3EE;--lime:#C6F24E;--dark:#0F120D;--sub:#6E726A;--line:#E4E2DA;}
 *{box-sizing:border-box;}
 .pt-root{min-height:100vh;background:var(--paper);color:var(--ink);font-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;}
