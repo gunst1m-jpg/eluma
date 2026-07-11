@@ -104,20 +104,21 @@ export default function Personvern() {
 }
 
 const css = `
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Unbounded:wght@600;700&display=swap');
 .pv-root{--paper:#F4F3EE;--ink:#191C19;--dim:#5C6157;--lime:#C6F24E;--line:#E4E2DA;
   background:var(--paper);color:var(--ink);min-height:100vh;
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.65;}
+  font-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif;line-height:1.65;}
 .pv-topp{display:flex;align-items:center;justify-content:space-between;
   max-width:760px;margin:0 auto;padding:22px 24px;}
-.pv-merke{font-weight:800;letter-spacing:-.02em;font-size:20px;color:var(--ink);text-decoration:none;}
+.pv-merke{font-family:'Unbounded',sans-serif;font-weight:700;letter-spacing:-.02em;font-size:20px;color:var(--ink);text-decoration:none;}
 .pv-tilbake{font-size:14px;color:var(--dim);text-decoration:none;}
 .pv-tilbake:hover{color:var(--ink);}
 .pv-dok{max-width:760px;margin:0 auto;padding:8px 24px 56px;}
-.pv-dok h1{font-size:30px;line-height:1.2;margin:12px 0 6px;letter-spacing:-.02em;}
+.pv-dok h1{font-family:'Unbounded',sans-serif;font-weight:700;font-size:30px;line-height:1.2;margin:12px 0 6px;letter-spacing:-.02em;}
 .pv-meta{color:var(--dim);font-size:14px;margin:0 0 24px;}
 .pv-ingress{font-size:17px;color:var(--ink);margin:0 0 8px;padding-bottom:20px;border-bottom:1px solid var(--line);}
 .pv-dok section{padding:22px 0;border-bottom:1px solid var(--line);}
-.pv-dok h2{font-size:18px;margin:0 0 10px;}
+.pv-dok h2{font-size:18px;font-weight:700;letter-spacing:-.01em;margin:0 0 10px;}
 .pv-dok p{margin:0 0 12px;font-size:15.5px;color:#2A2E28;}
 .pv-dok p:last-child{margin-bottom:0;}
 .pv-dok a{color:var(--ink);text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--lime);}
