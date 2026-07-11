@@ -184,6 +184,10 @@ export default function Portal() {
   const [reqHel, setReqHel] = useState(false);
   const [forbruk, setForbruk] = useState(null);
   const [forbrukLaster, setForbrukLaster] = useState(false);
+  const [redigerer, setRedigerer] = useState(false);
+  const [formNavn, setFormNavn] = useState("");
+  const [formMobil, setFormMobil] = useState("");
+  const [lagrer, setLagrer] = useState(false);
 
   useEffect(() => { sjekk(); }, []);
 
@@ -218,7 +222,25 @@ export default function Portal() {
     catch {} finally { setForbrukLaster(false); }
   };
 
-  const velgFane = (f) => { setFane(f); setFeil(""); setInfo(""); if (f === "abonnement" && !abo && !demo) hentAbonnement(); if (f === "forbruk" && !forbruk && !demo) hentForbruk(); };
+  const velgFane = (f) => { setFane(f); setFeil(""); setInfo(""); setRedigerer(false); if (f === "abonnement" && !abo && !demo) hentAbonnement(); if (f === "forbruk" && !forbruk && !demo) hentForbruk(); };
+
+  // Profil: kun navn + mobil er redigerbare (hvitliste, speiler backend). Resten låst.
+  const startRediger = () => { setFormNavn(partner?.navn || ""); setFormMobil(partner?.mobil || ""); setFeil(""); setInfo(""); setRedigerer(true); };
+  const lagreProfil = async () => {
+    const navn = formNavn.trim(), mobil = formMobil.trim();
+    if (!navn) { setFeil("Navn kan ikke være tomt."); return; }
+    if (!/^\+?\d[\d\s]{6,}$/.test(mobil)) { setFeil("Skriv et gyldig mobilnummer."); return; }
+    setLagrer(true); setFeil("");
+    if (demo) { setPartner((p) => ({ ...p, navn, mobil })); setRedigerer(false); setLagrer(false); setInfo("Profilen er oppdatert."); return; }
+    try {
+      const r = await fetch("/api/portal/meg", { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ navn, mobil }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { setFeil(d.feil || "Kunne ikke lagre."); return; }
+      if (d.partner) setPartner(d.partner);
+      setRedigerer(false); setInfo("Profilen er oppdatert.");
+    } catch { setFeil("Nettverksfeil. Prøv igjen."); }
+    finally { setLagrer(false); }
+  };
 
   const svarLead = async (l, svar) => {
     setFeil(""); setInfo("");
@@ -491,21 +513,34 @@ export default function Portal() {
             </>
           ) : (
             <>
-              <h1 className="pt-hei">Min profil</h1>
+              <div className="pt-rad-topp">
+                <h1 className="pt-hei">Min profil</h1>
+                {!redigerer
+                  ? <button className="pt-mini" onClick={startRediger}>Rediger</button>
+                  : <button className="pt-mini" onClick={() => { setRedigerer(false); setFeil(""); }}>Avbryt</button>}
+              </div>
               <p className="pt-und">Slik er firmaet ditt registrert hos Eluma.</p>
+              {feil && <p className="pt-feil pt-feil-rad">{feil}</p>}
+              {info && <p className="pt-info">{info}</p>}
               <div className="pt-kort">
                 <dl className="pt-dl">
                   <div><dt>Firma</dt><dd>{partner.firma || "—"}</dd></div>
                   {partner.orgnr ? <div><dt>Org.nr</dt><dd>{partner.orgnr}</dd></div> : null}
-                  <div><dt>Kontaktperson</dt><dd>{partner.navn || "—"}</dd></div>
-                  <div><dt>Mobil</dt><dd>{partner.mobil || "—"}</dd></div>
-                  <div><dt>E-post</dt><dd>{partner.epost || "—"}</dd></div>
+                  <div><dt>Kontaktperson</dt><dd>{redigerer
+                    ? <input className="pt-inline-input" value={formNavn} onChange={(e) => setFormNavn(e.target.value)} />
+                    : (partner.navn || "—")}</dd></div>
+                  <div><dt>Mobil</dt><dd>{redigerer
+                    ? <input className="pt-inline-input" inputMode="tel" value={formMobil} onChange={(e) => setFormMobil(e.target.value)} />
+                    : (partner.mobil || "—")}</dd></div>
+                  <div><dt>E-post</dt><dd>{partner.epost || "—"}{redigerer ? <span className="pt-laas-note"> · endre? ta kontakt</span> : null}</dd></div>
                   <div><dt>Fag</dt><dd>{fag.map((f) => FAG_NAVN[f] || f).join(" · ") || "—"}</dd></div>
                   <div><dt>Dekning</dt><dd>{dekning.length ? dekning.join(", ") : "Ingen kommuner valgt ennå"}</dd></div>
                   <div><dt>Status</dt><dd>{partner.status ? partner.status.charAt(0).toUpperCase() + partner.status.slice(1) : "—"}</dd></div>
                 </dl>
               </div>
-              <p className="pt-fot">Noe som ikke stemmer? Ta kontakt med oss, så retter vi det.</p>
+              {redigerer
+                ? <button className="pt-knapp-lys" onClick={lagreProfil} disabled={lagrer}>{lagrer ? "Lagrer …" : "Lagre endringer"}</button>
+                : <p className="pt-fot">Fag og dekning endrer du under <strong>Abonnement &amp; områder</strong>. Firma, org.nr og e-post er låst — noe feil? Ta kontakt, så retter vi det.</p>}
             </>
           )}
         </main>
@@ -648,6 +683,9 @@ const css = `
 .pt-felt select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:14.5px;font-family:inherit;cursor:pointer;outline:none;}
 .pt-felt select:focus-visible{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,242,78,.25);}
 .pt-felt select:disabled{opacity:.5;cursor:default;}
+.pt-inline-input{font:inherit;font-size:15px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);width:100%;max-width:240px;outline:none;}
+.pt-inline-input:focus-visible{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,242,78,.2);}
+.pt-laas-note{color:var(--sub);font-size:12.5px;}
 .pt-sjekk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer;}
 .pt-sjekk input{width:16px;height:16px;accent-color:#5d7a1f;}
 .pt-pris-prev{font-size:14px;color:var(--ink);font-weight:600;margin:0;}
