@@ -132,6 +132,10 @@ function ElumaLogo({ height = 40, theme = 'light', bolt, text, glow, autoPlay = 
 
 // Test-bypass vises overalt UNNTATT på produksjonsdomenet eluma.no.
 const VIS_TEST_BYPASS = typeof window !== "undefined" && !/(^|\.)eluma\.no$/.test(window.location.hostname);
+// Forbruk-fanen er skjult til launch: et rent kostnadspanel ankrer på pris i isolasjon (anti-premium).
+// Kommer tilbake som "Forbruk & resultat" (kostnad vs. vunne jobber = ROI) når C3-utfallsdata flyter.
+// Sett true for å vise den igjen (render-grenen + henting står klar under).
+const VIS_FORBRUK = false;
 
 const KOMMUNER = [
   "Arendal", "Birkenes", "Bygland", "Bykle", "Evje og Hornnes", "Farsund",
@@ -327,7 +331,7 @@ export default function Portal() {
           <nav className="pt-faner">
             <button className={"pt-fane" + (fane === "leads" ? " valgt" : "")} onClick={() => velgFane("leads")}>Mine leads</button>
             <button className={"pt-fane" + (fane === "abonnement" ? " valgt" : "")} onClick={() => velgFane("abonnement")}>Abonnement & områder</button>
-            <button className={"pt-fane" + (fane === "forbruk" ? " valgt" : "")} onClick={() => velgFane("forbruk")}>Forbruk</button>
+            {VIS_FORBRUK && <button className={"pt-fane" + (fane === "forbruk" ? " valgt" : "")} onClick={() => velgFane("forbruk")}>Forbruk</button>}
             <button className={"pt-fane" + (fane === "profil" ? " valgt" : "")} onClick={() => velgFane("profil")}>Min profil</button>
           </nav>
         </div>
