@@ -153,7 +153,7 @@ const parseFag = (s) => (s || "").split(",").map((x) => x.trim()).filter(Boolean
 const nok = (n) => Number(n || 0).toLocaleString("nb-NO") + " kr";
 const telLenke = (m) => "tel:" + String(m || "").replace(/\s/g, "");
 
-const DEMO_PARTNER = { firma: "Demo Elektro AS", orgnr: "999 888 777", fag: "elbillader, elektriker", dekning: ["Kristiansand", "Lillesand"], status: "interessert" };
+const DEMO_PARTNER = { firma: "Demo Elektro AS", orgnr: "999 888 777", navn: "Ola Demo", mobil: "400 00 000", epost: "ola@demoelektro.no", fag: "elbillader, elektriker", dekning: ["Kristiansand", "Lillesand"], status: "interessert" };
 const DEMO_LEADS = [
   { id: "d1", opprettet: new Date().toISOString(), tjeneste: "elbillader", omfang: null, kommune: "Kristiansand", navn: "Kari Demo", mobil: "400 00 001", adresse: "Eksempelveien 1", beskrivelse: "Ønsker hjemmelader i garasjen.", tidshorisont: "Så snart som mulig", intensjon: "varm", leadverdi: 450, status: "tildelt" },
   { id: "d2", opprettet: new Date(Date.now() - 9e7).toISOString(), tjeneste: "elektriker", omfang: "Større jobb", kommune: "Lillesand", navn: "Per Demo", mobil: "400 00 002", adresse: "Testgata 4", beskrivelse: "Trenger nytt sikringsskap.", tidshorisont: "Innen en måned", intensjon: "lunken", leadverdi: 450, status: "akseptert" },
@@ -497,10 +497,15 @@ export default function Portal() {
                 <dl className="pt-dl">
                   <div><dt>Firma</dt><dd>{partner.firma || "—"}</dd></div>
                   {partner.orgnr ? <div><dt>Org.nr</dt><dd>{partner.orgnr}</dd></div> : null}
+                  <div><dt>Kontaktperson</dt><dd>{partner.navn || "—"}</dd></div>
+                  <div><dt>Mobil</dt><dd>{partner.mobil || "—"}</dd></div>
+                  <div><dt>E-post</dt><dd>{partner.epost || "—"}</dd></div>
                   <div><dt>Fag</dt><dd>{fag.map((f) => FAG_NAVN[f] || f).join(" · ") || "—"}</dd></div>
                   <div><dt>Dekning</dt><dd>{dekning.length ? dekning.join(", ") : "Ingen kommuner valgt ennå"}</dd></div>
+                  <div><dt>Status</dt><dd>{partner.status ? partner.status.charAt(0).toUpperCase() + partner.status.slice(1) : "—"}</dd></div>
                 </dl>
               </div>
+              <p className="pt-fot">Noe som ikke stemmer? Ta kontakt med oss, så retter vi det.</p>
             </>
           )}
         </main>

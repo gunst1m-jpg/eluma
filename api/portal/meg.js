@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
   try {
     const r = await fetch(
-      `${url}/rest/v1/partnere?id=eq.${encodeURIComponent(pid)}&select=id,firma,orgnr,navn,epost,fag,dekning,status&limit=1`,
+      `${url}/rest/v1/partnere?id=eq.${encodeURIComponent(pid)}&select=id,firma,orgnr,navn,mobil,epost,fag,dekning,status&limit=1`,
       { headers: sbHeaders(key) }
     );
     const partner = (r.ok ? await r.json() : [])[0];
